@@ -1,16 +1,14 @@
 var _ = require('lodash');
 var Promise = require('promise');
-
 var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
-
 var express = require('express');
 var router = express.Router();
-
 var Slack = require('node-slack');
-var slack = new Slack(process.env.SLACK_HOOK_URL);
+var Sound = require('node-mpg123');
 
+var slack = new Slack(process.env.SLACK_HOOK_URL);
 var sounds = require('../lib/sounds');
 
 var findSoundFile = function(trigger) {
@@ -26,13 +24,15 @@ var findSoundFile = function(trigger) {
 
 var playSound = function(file_name) {
   return new Promise(function(resolve, reject) {
-    var execCmd = "mpg123 " + process.cwd() + "/sounds/" + file_name;
-    exec(execCmd, function(err, stdout, stderr) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
+    var player = new Sound(process.cwd() + "/sounds/" + file_name);
+    player.play();
+    
+    player.on('complete', function() {
+      resolve();
+    });
+    
+    player.on('error', function(err) {
+      reject(err);
     });
   });
 }
@@ -44,9 +44,9 @@ router.get('/', function(req, res, next) {
 
 router.post('/play', function(req, res, next) {
   // Verify that the request is coming from Slack
-  if (req.body.token != process.env.SLACK_HOOK_TOKEN) {
-    res.status(401).end();
-  }
+  // if (req.body.token != process.env.SLACK_HOOK_TOKEN) {
+  //   res.status(401).end();
+  // }
 
   var params = req.body;
   var trigger = params.text;
