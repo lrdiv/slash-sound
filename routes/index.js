@@ -44,9 +44,9 @@ router.get('/', function(req, res, next) {
 
 router.post('/play', function(req, res, next) {
   // Verify that the request is coming from Slack
-  // if (req.body.token != process.env.SLACK_HOOK_TOKEN) {
-  //   res.status(401).end();
-  // }
+  if (req.body.token != process.env.SLACK_HOOK_TOKEN) {
+    res.status(401).end();
+  }
 
   var params = req.body;
   var trigger = params.text;
