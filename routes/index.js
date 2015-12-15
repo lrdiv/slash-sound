@@ -53,6 +53,7 @@ router.post('/play', function(req, res, next) {
   var user = params.user_name;
 
   findSoundFile(trigger).then(function(file) {
+    res.status(200).end();
     playSound(file).then(function() {
       if (user) {
         var slackText = '@' + user + " just triggered the \"" + trigger + "\" sound";
@@ -63,7 +64,6 @@ router.post('/play', function(req, res, next) {
           icon_emoji: ':ohgoodforyouuu:'
         });
       }
-      res.status(200).end();
     }, function(err) {
       console.log(err);
       res.status(500).end();
