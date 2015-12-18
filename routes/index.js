@@ -12,7 +12,7 @@ var slack = new Slack(process.env.SLACK_HOOK_URL);
 var sounds = require('../lib/sounds');
 
 var getPossibleCommands = function() {
-  return _.pluck(sounds, 'trigger').join(',');
+  return _.pluck(sounds, 'trigger').join(', ');
 }
 
 var findSoundFile = function(trigger) {
