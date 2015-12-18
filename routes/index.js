@@ -11,6 +11,10 @@ var Sound = require('node-mpg123');
 var slack = new Slack(process.env.SLACK_HOOK_URL);
 var sounds = require('../lib/sounds');
 
+var getPossibleCommands = function() {
+  return _.pluck(sounds, 'trigger').join(',');
+}
+
 var findSoundFile = function(trigger) {
   return new Promise(function(resolve, reject) {
     sound = _.first(_.where(sounds, { trigger: trigger }));
@@ -51,6 +55,11 @@ router.post('/play', function(req, res, next) {
   var params = req.body;
   var trigger = params.text;
   var user = params.user_name;
+  
+  if (!params.text || params.text.length < 2) {
+    var commands = getPossibleCommands();
+    res.send({text: commands});
+  }
 
   findSoundFile(trigger).then(function(file) {
     res.status(200).end();
