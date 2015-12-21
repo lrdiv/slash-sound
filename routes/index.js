@@ -69,7 +69,9 @@ router.post('/play', function(req, res, next) {
   
   if (!params.text || params.text.length < 2) {
     var commands = getPossibleCommands();
-    res.send({text: commands});
+    res.send({
+      text: commands
+    });
   }
 
   var file = findSoundFile(trigger);
@@ -82,7 +84,7 @@ router.post('/play', function(req, res, next) {
     res.status(200).end();
     playSound(file).then(
       sendSlackMessage(user, trigger), function(err) {
-      res.status(500).end();
+        console.error(err);
     });
   }
 });
