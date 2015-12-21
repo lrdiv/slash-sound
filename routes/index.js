@@ -59,9 +59,9 @@ router.get('/', function(req, res, next) {
 
 router.post('/play', function(req, res, next) {
   // Verify that the request is coming from Slack
-  if (req.body.token != process.env.SLACK_HOOK_TOKEN) {
-    res.status(401).end();
-  }
+  // if (req.body.token != process.env.SLACK_HOOK_TOKEN) {
+  //   res.status(401).end();
+  // }
 
   var params = req.body;
   var trigger = params.text;
@@ -76,13 +76,12 @@ router.post('/play', function(req, res, next) {
   
   if (!file) {
     res.send({
-      text: "No sound matching that trigger!";
+      text: "No sound matching that trigger!"
     });
   } else {
     res.status(200).end();
     playSound(file).then(
-      sendSlackMessage(user, trigger));
-    }, function(err) {
+      sendSlackMessage(user, trigger), function(err) {
       res.status(500).end();
     });
   }
