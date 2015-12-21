@@ -16,19 +16,18 @@ var getPossibleCommands = function() {
 }
 
 var findSoundFile = function(trigger) {
-  return new Promise(function(resolve, reject) {
+  var sound;
+  if (trigger == 'random') {
+    sound = _.sample(sounds);
+  } else {
     sound = _.first(_.where(sounds, { trigger: trigger }));
-    if (sound) {
-      resolve(sound.filename);
-    } else {
-      reject("Unknown trigger.");
-    }
-  });
+  }
+  return sound.filename;
 }
 
-var playSound = function(file_name) {
+var playSound = function(file) {
   return new Promise(function(resolve, reject) {
-    var player = new Sound(process.cwd() + "/sounds/" + file_name);
+    var player = new Sound(process.cwd() + "/sounds/" + file);
     player.play();
     
     player.on('complete', function() {
@@ -39,6 +38,18 @@ var playSound = function(file_name) {
       reject(err);
     });
   });
+}
+
+var sendSlackMessage = function(user, trigger) {
+  if (user) {
+    var slackText = '@' + user + " just triggered the \"" + trigger + "\" sound";
+    slack.send({
+      text: slackText,
+      channel: '#yolo',
+      username: 'Soundbot',
+      icon_emoji: ':ohgoodforyouuu:'
+    });
+  }
 }
 
 /* GET home page. */
@@ -61,27 +72,20 @@ router.post('/play', function(req, res, next) {
     res.send({text: commands});
   }
 
-  findSoundFile(trigger).then(function(file) {
+  var file = findSoundFile(trigger);
+  
+  if (!file) {
+    res.send({
+      text: "No sound matching that trigger!";
+    });
+  } else {
     res.status(200).end();
-    playSound(file).then(function() {
-      if (user) {
-        var slackText = '@' + user + " just triggered the \"" + trigger + "\" sound";
-        slack.send({
-          text: slackText,
-          channel: '#yolo',
-          username: 'Soundbot',
-          icon_emoji: ':ohgoodforyouuu:'
-        });
-      }
+    playSound(file).then(
+      sendSlackMessage(user, trigger));
     }, function(err) {
-      console.log(err);
       res.status(500).end();
     });
-  }, function(err) {
-    console.log(err);
-    res.status(500).end();
-  });
-
+  }
 });
 
 module.exports = router;
