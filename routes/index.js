@@ -16,13 +16,17 @@ var getPossibleCommands = function() {
 }
 
 var findSoundFile = function(trigger) {
-  var sound;
-  if (trigger == 'random') {
-    sound = _.sample(sounds);
-  } else {
-    sound = _.first(_.where(sounds, { trigger: trigger }));
+  var sound = {
+    random: false
   }
-  return sound.filename;
+  if (trigger == 'random') {
+    sound.random = true;
+    random = _.sample(sounds);
+    sound = _.assign(sound, random);
+  } else {
+    sound = _.assign(sound, _.first(_.where(sounds, { trigger: trigger })));
+  }
+  return sound;
 }
 
 var playSound = function(file) {
@@ -40,9 +44,12 @@ var playSound = function(file) {
   });
 }
 
-var sendSlackMessage = function(user, trigger) {
+var sendSlackMessage = function(user, sound) {
   if (user) {
-    var slackText = '@' + user + " just triggered the \"" + trigger + "\" sound";
+    var slackText = '@' + user + " just triggered the \"" + sound.trigger + "\" sound";
+    if (sound.random) {
+      slackText += " via \"random\"";
+    }
     slack.send({
       text: slackText,
       channel: '#yolo',
@@ -74,18 +81,19 @@ router.post('/play', function(req, res, next) {
     });
   }
 
-  var file = findSoundFile(trigger);
+  var sound = findSoundFile(trigger);
   
-  if (!file) {
+  if (!sound) {
     res.send({
       text: "No sound matching that trigger!"
     });
   } else {
     res.status(200).end();
-    playSound(file).then(
-      sendSlackMessage(user, trigger), function(err) {
+    playSound(sound.filename).then(
+      sendSlackMessage(user, sound), function(err) {
         console.error(err);
-    });
+      }
+    )
   }
 });
 
