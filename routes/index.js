@@ -84,7 +84,7 @@ router.post('/play', function(req, res, next) {
   var sound = findSoundFile(trigger);
   
   if (!sound) {
-    res.send({
+    return res.send({
       text: "No sound matching that trigger!"
     });
   } else {
