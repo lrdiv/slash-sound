@@ -16,9 +16,7 @@ var getPossibleCommands = function() {
 }
 
 var findSoundFile = function(trigger) {
-  var sound = {
-    random: false
-  }
+  var sound = {}
   if (trigger == 'random') {
     sound.random = true;
     random = _.sample(sounds);
@@ -65,7 +63,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/play', function(req, res, next) {
-  // Verify that the request is coming from Slack
+  Verify that the request is coming from Slack
   if (req.body.token != process.env.SLACK_HOOK_TOKEN) {
     res.status(401).end();
   }
@@ -82,8 +80,8 @@ router.post('/play', function(req, res, next) {
   }
 
   var sound = findSoundFile(trigger);
-  
-  if (!sound) {
+
+  if (_.isEmpty(sound)) {
     return res.send({
       text: "No sound matching that trigger!"
     });
