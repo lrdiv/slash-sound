@@ -76,7 +76,7 @@ router.post('/play', function(req, res, next) {
   
   if (!params.text || params.text.length < 2) {
     var commands = getPossibleCommands();
-    res.send({
+    return res.send({
       text: commands
     });
   }
