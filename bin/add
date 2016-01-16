@@ -1,0 +1,40 @@
+#! /usr/bin/env node
+var _           = require('lodash');
+var fs          = require('fs');
+var colors      = require('colors');
+var jsonfile    = require('jsonfile');
+
+var triggerName = process.argv.slice(2)[0];
+var soundsFile  = __dirname + '/../sounds.json';
+
+triggerName = triggerName.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+triggerName = triggerName.toLowerCase();
+
+console.log(colors.blue("Looking for existing " + triggerName + " trigger..."));
+var soundsJSON = jsonfile.readFileSync(soundsFile);
+
+var existingSound = _.find(soundsJSON, {'trigger': triggerName});
+if (existingSound) {
+  console.log(colors.red("A sound with that trigger already exists!"));
+  return false;
+}
+
+console.log(colors.blue("Checking for mp3..."));
+
+try {
+  stats = fs.lstatSync(__dirname + '/../sounds/' + triggerName + '.mp3');
+  if (stats.isFile()) {
+    console.log(colors.blue("Found " + triggerName + ".mp3! Adding entry to sounds.json"));
+
+    soundsJSON.push({
+      "trigger": triggerName,
+      "filename": triggerName + ".mp3"
+    });
+
+    jsonfile.writeFileSync(soundsFile, soundsJSON, {spaces: 2});
+    console.log(colors.green("Trigger list updated!"));
+  }
+}
+catch (e) {
+  console.log(colors.red(triggerName + ".mp3 does not exist!"));
+}

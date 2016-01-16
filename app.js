@@ -1,12 +1,12 @@
 require('dotenv').load();
 
-var app = module.exports = require('koa')();
-var router = require('koa-router')();
-var koabody = require('koa-body')();
-var validate = require('./lib/validate');
+var app           = module.exports = require('koa')();
+var router        = require('koa-router')();
+var koabody       = require('koa-body')();
+var validate      = require('./lib/validate');
 
-var _ = require('lodash');
-var soundmachine = require('./lib/soundmachine');
+var _             = require('lodash');
+var soundmachine  = require('./lib/soundmachine');
 
 router.post('/play', koabody, function *(next) {
   var params = this.request.body,
