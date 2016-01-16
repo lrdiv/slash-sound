@@ -1,6 +1,6 @@
 require('dotenv').load();
 
-var app = require('koa')();
+var app = module.exports = require('koa')();
 var router = require('koa-router')();
 var koabody = require('koa-body')();
 var validate = require('./lib/validate');
