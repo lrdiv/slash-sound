@@ -21,12 +21,12 @@
   - `SLACK_HOOK_TOKEN` - the slash command token
 4. `npm install`
 5. `sudo apt-get install mpg123`
-6. `forever start bin/www`
+6. `forever start app.js`
 
 ## Accessing the Raspberry Pi
 I recommend using a service like [ngrok](https://ngrok.io) on the Raspberry Pi to get a dedicated subdomain for the application. Once you have this set up, you can finish configuring your slash command with the URL where the app is accessible. **Note that the endpoint will be `/play`**
 
 ## Adding New Sounds
 1. Put the mp3 file in the sounds directory
-2. Open `lib/sounds.js` in your editor
+2. Open `sounds.json` in your editor
 3. Add a new object to the array of sounds, the `trigger` is the text passed after your slash command and the `filename` is the name of the mp3 file (relative to the sounds directory).

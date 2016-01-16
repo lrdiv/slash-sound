@@ -1,59 +1,41 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+require('dotenv').load();
 
-var routes = require('./routes/index');
+var app = require('koa')();
+var router = require('koa-router')();
+var koabody = require('koa-body')();
+var validate = require('./lib/validate');
 
-var app = express();
+var _ = require('lodash');
+var soundmachine = require('./lib/soundmachine');
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+router.post('/play', koabody, function *(next) {
+  var params = this.request.body,
+      trigger = params.text,
+      user = params.user_name;
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+  if (!params.text || params.text.length < 2) {
+    var commands = soundmachine.getPossibleCommands();
+    this.response.body = { text: commands };
+    return yield next;
+  }
 
-app.use('/', routes);
+  var sound = soundmachine.findSoundFile(trigger);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+  if (_.isEmpty(sound)) {
+    this.response.body = { text: "No sound matching that trigger!" };
+    return yield next;
+  } else {
+    this.response.status = 200;
+    yield next;
+    soundmachine.playSound(sound.filename).then(
+      soundmachine.sendSlackMessage(user, sound), function(err) {
+        console.error(err);
+      }
+    );
+  }
 });
 
-// error handlers
+app.use(router.routes());
+app.use(validate());
 
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
-});
-
-app.set('port', 8090);
-
-module.exports = app;
+app.listen(3000);
