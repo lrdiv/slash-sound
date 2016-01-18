@@ -7,8 +7,7 @@ var jsonfile    = require('jsonfile');
 var triggerName = process.argv.slice(2)[0];
 var soundsFile  = __dirname + '/../sounds.json';
 
-triggerName = triggerName.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
-triggerName = triggerName.toLowerCase();
+triggerName = triggerName.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '').toLowerCase();
 
 console.log(colors.blue("Looking for existing " + triggerName + " trigger..."));
 var soundsJSON = jsonfile.readFileSync(soundsFile);
