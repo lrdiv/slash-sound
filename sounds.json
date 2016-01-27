@@ -66,5 +66,9 @@
   {
     "trigger": "spaghetti",
     "filename": "spaghetti.mp3"
+  },
+  {
+    "trigger": "stab",
+    "filename": "soldering-iron.mp3"
   }
 ]
