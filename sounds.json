@@ -70,5 +70,17 @@
   {
     "trigger": "stab",
     "filename": "soldering-iron.mp3"
+  },
+  {
+    "trigger": "byah",
+    "filename": "byah.mp3"
+  },
+  {
+    "trigger": "jungle",
+    "filename": "jungle.mp3"
+  },
+  {
+    "trigger": "foreveralone",
+    "filename": "allbymyself.mp3"
   }
 ]
