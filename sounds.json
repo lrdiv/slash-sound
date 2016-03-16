@@ -82,5 +82,9 @@
   {
     "trigger": "foreveralone",
     "filename": "allbymyself.mp3"
+  },
+  {
+    "trigger": "walkoflife",
+    "filename": "walkoflife.mp3"
   }
 ]
