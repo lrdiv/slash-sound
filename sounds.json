@@ -90,5 +90,9 @@
   {
     "trigger": "myboo",
     "filename": "myboo.mp3"
+  },
+  {
+    "trigger": "lizlemon",
+    "filename": "lizlemon.mp3"
   }
 ]
