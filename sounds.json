@@ -94,5 +94,9 @@
   {
     "trigger": "lizlemon",
     "filename": "lizlemon.mp3"
-  }
+  },
+  {
+    "trigger": "simplythebest",
+    "filename": "simplythebest.mp3"
+  }  
 ]
